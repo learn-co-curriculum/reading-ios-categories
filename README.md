@@ -1,3 +1,8 @@
+---
+tags: categories, objects
+languages: objc
+---
+
 #Categories
 
 ###Categories allow us to add methods to an existing class without modifying its original implementation file. 
