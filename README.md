@@ -1,7 +1,4 @@
----
-tags: categories, objects
-languages: objc
----
+
 
 #Categories
 
