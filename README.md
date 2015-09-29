@@ -1,68 +1,90 @@
+# Categories
 
+Categories allow us to add methods to an existing class without modifying its original implementation file. This is also called "extension". 
 
-#Categories
+**Note:** *Categories can only extend a class via methods. Properties cannot be added to a class in a category file. If your problem is best solved by adding a property, you must create a subclass instead.*
 
-###Categories allow us to add methods to an existing class without modifying its original implementation file. 
+Categories are primarily useful for adding functionality to a class that the current project does not own. This can be a class belonging to an Apple framework (such as `NSString`), a third-party framework (such as a custom matcher for Expecta), or a dynamically generated class owned by Core Data.
 
-This is useful to us in a few ways:
+### Example: String Elision
 
-1. It lets us separate the behaviors of a class into multiple files for
-   organization.
-2. By separating behaviors into multiple files, we can choose who gets to see
-   which methods.
-3. We can also add functionality to classes we have no control over, like
-   Apple's standard libraries.
+As an example, let's take a situation in which we would need to shorten a string, perhaps in order to fit it into a label. We can truncate the string to a certain length and then append an ellipsis character (`…`) to it. This a process called *elision,* or *to elide*. Since this is functionality that we wish to add to the foundation class `NSString`, it is a good candidate for writing a category.
 
-Since the first 2 benefits of categories can be somewhat application specific,
-let's use categories to extend the functionality of Apple's NSString class!
+To create a category file in Objective-C, create a new Cocoa Touch Class and give it the name of the base class plus (`+`) a name for the extension you are writing. In our case we're going call this category `Elide`, so the file names will use `NSSting+Elide`.
 
-Now I think NSString is just swell, but sometimes strings can get in the habit
-of getting too long. Let's create a category on NSString that lets us
-"ellipsize" a string after a specified number of characters. Ellipsize in this
-case will mean to cut off the string after so many characters and replace the
-rest with "...".
-
-#####So this is what our category's header would look like:
+In the `@interface` section of the category's `.h` header file, write the name of the base class (`NSString` in our case) followed by the name of the extension in parentheses:
 
 ```objc
-//  NSString+Ellipsize.h
+//  NSString+Elide.h
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (Ellipsize)
-
--(NSString *)ellipsizeAfter:(NSUInteger)numCharacters;
+@interface NSString (Elide)
 
 @end
 ```
 
-#####And this would be our implementation file:
+Now, let's declare a method that we're going to add to `NSString`. Let's call it `fis_elideStringToLength:` and pass in an `NSUInteger` argument called `length`. This `length` argument will allow the user to determine how long the returned string should be including the ellipsis: 
 
 ```objc
-//  NSString+Ellipsize.m
+//  NSString+Elide.h
 
-#import "NSString+Ellipsize.h"
+#import <Foundation/Foundation.h>
 
-@implementation NSString (Ellipsize)
+@interface NSString (Elide)
 
--(NSString *)ellipsizeAfter:(NSUInteger)numCharacters
-{
-    if (numCharacters > self.length) {
+- (NSString *)fis_elideStringToLength:(NSUInteger)length;
+
+@end
+```
+
+In our implementation, we should return the whole string if the `length` argument is greater than or equal to the string's length. However, if the string is longer than the maximum length, we should shorten the string to one character less than the maximum length (to make room for the ellipsis character), and then append the ellipsis character:
+
+```objc
+//  NSString+Elide.m
+
+#import "NSString+Elide.h"
+
+@implementation NSString (Elide)
+
+- (NSString *)fis_elideStringToLength:(NSUInteger)length {
+    if (length >= self.length) {
         return self;
     }
     
-    NSString *modifiedString = [self substringWithRange:NSMakeRange(0, numCharacters)];
-    return [modifiedString stringByAppendingString:@"..."];
+    NSUInteger index = length - 1;
+    NSString *truncated = [self substringToIndex:index];
+    NSString *elision = [truncated stringByAppendingString:@"…"];
     
+    return elision;
 }
 
 @end
 ```
 
-#####And we can use it like this:
+### Calling a Category Method
+
+The category files are then just like any other pair of class files, with the exception that they are depend on the base class in order to work. We can import our category file by using its name, which then makes the category methods within it available to the class. Using our category method within `FISAppDelegate`'s `application:didFinishLaunchingWithOptions:` method might look like this:
 
 ```objc
-#import "NSString+Ellipsize.h"
+// FISAppDelegate.m
 
-NSLog(@"%@", [@"Hi there!" ellipsizeAfter:2]); // this prings "Hi..."
+#import "FISAppDelegate.h"
+#import "NSString+Elide.h"  // import the category's header
+
+@implementation
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    NSString *brightStar = @"Bright star, would I were stedfast as thou art";
+
+    NSString *elision = [brightStar fis_elideStringAtIndex:20];
+
+    NSLog(@"%@", elision);
+    
+    return YES;
+}
+
+@end
 ```
+This will print: `Bright star, would …`.
