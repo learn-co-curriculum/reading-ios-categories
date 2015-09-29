@@ -10,16 +10,16 @@ Categories are primarily useful for adding functionality to a class that the cur
 
 As an example, let's take a situation in which we would need to shorten a string, perhaps in order to fit it into a label. We can truncate the string to a certain length and then append an ellipsis character (`…`) to it. This a process called *elision,* or *to elide*. Since this is functionality that we wish to add to the foundation class `NSString`, it is a good candidate for writing a category.
 
-To create a category file in Objective-C, create a new Cocoa Touch Class and give it the name of the base class plus (`+`) a name for the extension you are writing. In our case we're going call this category `Elide`, so the file names will use `NSSting+Elide`.
+To create a category file in Objective-C, create a new Cocoa Touch Class and give it the name of the base class plus (`+`) a name for the extension you are writing. In our case we're going call this category `FISElide`, so the file names will use `NSSting+FISElide`.
 
 In the `@interface` section of the category's `.h` header file, write the name of the base class (`NSString` in our case) followed by the name of the extension in parentheses:
 
 ```objc
-//  NSString+Elide.h
+//  NSString+FISElide.h
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (Elide)
+@interface NSString (FISElide)
 
 @end
 ```
@@ -27,11 +27,11 @@ In the `@interface` section of the category's `.h` header file, write the name o
 Now, let's declare a method that we're going to add to `NSString`. Let's call it `fis_elideStringToLength:` and pass in an `NSUInteger` argument called `length`. This `length` argument will allow the user to determine how long the returned string should be including the ellipsis: 
 
 ```objc
-//  NSString+Elide.h
+//  NSString+FISElide.h
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (Elide)
+@interface NSString (FISElide)
 
 - (NSString *)fis_elideStringToLength:(NSUInteger)length;
 
@@ -41,11 +41,11 @@ Now, let's declare a method that we're going to add to `NSString`. Let's call it
 In our implementation, we should return the whole string if the `length` argument is greater than or equal to the string's length. However, if the string is longer than the maximum length, we should shorten the string to one character less than the maximum length (to make room for the ellipsis character), and then append the ellipsis character:
 
 ```objc
-//  NSString+Elide.m
+//  NSString+FISElide.m
 
-#import "NSString+Elide.h"
+#import "NSString+FISElide.h"
 
-@implementation NSString (Elide)
+@implementation NSString (FISElide)
 
 - (NSString *)fis_elideStringToLength:(NSUInteger)length {
     if (length >= self.length) {
@@ -70,7 +70,7 @@ The category files are then just like any other pair of class files, with the ex
 // FISAppDelegate.m
 
 #import "FISAppDelegate.h"
-#import "NSString+Elide.h"  // import the category's header
+#import "NSString+FISElide.h"  // import the category's header
 
 @implementation
 
