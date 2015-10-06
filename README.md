@@ -42,7 +42,7 @@ Categories consist of an `@interface`-`@implementation` pair, just like the defi
     for(NSUInteger i = 0; i < self.length; i++) {
         NSRange rangeForIthCharacter = NSMakeRange(i, 1);
         NSString *ithCharacter = [self substringWithRange:rangeForIthCharacter];
-        [characters addObject:characters];
+        [characters addObject:ithCharacter];
     }
     
     return characters;
