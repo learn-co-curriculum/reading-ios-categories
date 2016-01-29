@@ -115,4 +115,4 @@ Adding `readonly` properties is possible, however, since they are essentially ju
 
 If a method in a category has the same name as a method on the class, the behavior is undefined. That is, there's no way of knowing whether your implementation or the original one will win. **Never declare a method in a category with the same name as one in the class.** To avoid accidental collisions with private methods, some sources (including Apple) recommend prefixing your category method names with a lowercase prefix and an underscore, so that our `characters` method from earlier would in fact be called `fis_characters`.
 
-<a href='https://learn.co/lessons/reading-ios-categories' data-visibility='hidden'>View this lesson on Learn.co</a>
+<p data-visibility='hidden'>View <a href='https://learn.co/lessons/reading-ios-categories' title='Categories'>Categories</a> on Learn.co and start learning to code for free.</p>
